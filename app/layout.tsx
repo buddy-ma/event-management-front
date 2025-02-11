@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import AuthProvider from "./providers/AuthProvider";
-import { Navbar } from "@/src/components/layout/navbar";
+import { Navbar } from "@/app/_components/navbar";
 export const metadata: Metadata = {
   title: "Eventi",
   description: "Event management app",

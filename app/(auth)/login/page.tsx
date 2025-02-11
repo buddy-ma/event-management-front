@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "@/src/components/Toast/ToastService";
+import { toast } from "@/app/_components/toast/ToastService";
 import { signIn, useSession } from "next-auth/react";
 
 export default function Login() {
@@ -51,7 +51,7 @@ export default function Login() {
   };
 
   return (
-    <div className=" bg-white flex items-center justify-center min-h-[calc(100vh-300px)] px-4 sm:px-6 lg:px-8">
+    <div className=" bg-white flex items-center justify-center min-h-[calc(100vh-100px)] px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full p-8 rounded-xl">
         <div>
           <h1 className="text-3xl font-extrabold text-center text-gray-900">

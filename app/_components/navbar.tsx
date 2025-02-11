@@ -8,21 +8,21 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/src/components/ui/sheet";
-import { Separator } from "@/src/components/ui/separator";
+} from "@/app/_components/ui/sheet";
+import { Separator } from "@/app/_components/ui/separator";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "@/src/components/ui/navigation-menu";
+} from "@/app/_components/ui/navigation-menu";
 
 import Link from "next/link";
 import Image from "next/image";
-import { ToggleTheme } from "@/src/components/layout/toogle-theme";
+import { ToggleTheme } from "@/app/_components/toogle-theme";
 import { useEffect, useState } from "react";
 import { signOut, useSession, SessionProvider } from "next-auth/react";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/app/_components/ui/button";
 
 import {
   DropdownMenu,
@@ -31,7 +31,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
+} from "@/app/_components/ui/dropdown-menu";
 
 interface RouteProps {
   href: string;
@@ -66,16 +66,14 @@ const NavbarContent = () => {
 
   const routes = [
     { href: "/", label: "Home" },
-    { href: "#about", label: "About" },
-    { href: "#features", label: "Features" },
-    { href: "#contact", label: "Contact" },
+    { href: "/events", label: "My Events" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (
     <header
-      className={`hover:shadow-lg transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50 bg-opacity-30 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky z-40 rounded-2xl flex justify-between items-center p-2 hover:border-2 hover:border-secondary ${
-        scrolled ? "border-2 border-secondary" : "border-2 border-transparent"
-      }`}
+      className={`hover:shadow-lg transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50 bg-opacity-30 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky z-40 rounded-2xl flex justify-between items-center p-2 hover:border-2 hover:border-secondary ${scrolled ? "border-2 border-secondary" : "border-2 border-transparent"
+        }`}
     >
       <Link href="/" className="font-bold text-lg flex items-center">
         <Image

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "@/src/components/Toast/ToastService";
+import { toast } from "@/app/_components/toast/ToastService";
 import { signIn, useSession } from "next-auth/react";
 
 export default function Register() {

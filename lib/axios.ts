@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getSession } from "next-auth/react";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1",
@@ -10,10 +11,10 @@ const api = axios.create({
 
 // Request interceptor for API calls
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token"); // Using the same token key as in your login page
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    const session = await getSession();
+    if (session?.user?.token) {
+      config.headers.Authorization = `Bearer ${session.user.token}`;
     }
     return config;
   },

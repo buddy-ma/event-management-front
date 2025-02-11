@@ -6,7 +6,6 @@ import {
   CreateEventData,
   UpdateEventData,
   EventFilters,
-  EventCategory,
 } from "@/src/types/event";
 import toast from "react-hot-toast";
 
@@ -35,7 +34,7 @@ export const useEvents = () => {
       if (filters?.end_date) params.append("end_date", filters.end_date);
 
       const response = await api.get<EventsResponse>(
-        `/events?${params.toString()}`
+        `${filters?.link}?${params.toString()}`
       );
       setEvents(response.data.data);
       setMeta(response.data.meta);
@@ -162,6 +161,7 @@ export const useEvents = () => {
 
   return {
     events,
+    setEvents,
     loading,
     error,
     meta,

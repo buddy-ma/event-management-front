@@ -1,6 +1,6 @@
 "use client";
-import { Badge } from "@/src/components/ui/badge";
-import { Button } from "@/src/components/ui/button";
+import { Badge } from "@/app/_components/ui/badge";
+import { Button } from "@/app/_components/ui/button";
 import { ArrowRight, Laugh } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

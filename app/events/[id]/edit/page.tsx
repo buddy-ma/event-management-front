@@ -5,19 +5,52 @@ import { Input } from "@/app/_components/ui/input";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { use } from "react";
 
-export default function CreateEventPage() {
+export default function EditEventPage({ params }: { params: { id: number } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [event, setEvent] = useState<any>(null);
+  const resolvedParams = use(params) as { id: number };
 
   // Redirect if not authenticated
   if (status === "unauthenticated") {
     router.push("/login");
     return null;
   }
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/events/${resolvedParams.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session?.user?.token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch event");
+        }
+
+        const data = await response.json();
+        setEvent(data.data);
+        setIsOnline(data.data.is_online);
+      } catch (error) {
+        toast.error("Failed to load event");
+        console.error(error);
+      }
+    };
+
+    if (session?.user?.token) {
+      fetchEvent();
+    }
+  }, [resolvedParams.id, session]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,9 +76,9 @@ export default function CreateEventPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/events`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/events/${resolvedParams.id}`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -57,19 +90,23 @@ export default function CreateEventPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errorMessage = errorData?.message || "Failed to create event.";
+        const errorMessage = errorData?.message || "Failed to update event.";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
 
-      toast.success("Event created successfully.");
-      // router.push("/"); // Redirect to events list after creation
+      toast.success("Event updated successfully.");
+      router.push("/events");
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error updating event:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (!event) {
+    return <div className="container max-w-6xl mx-auto py-8 px-4 mt-20 text-center">Loading...</div>;
+  }
 
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4 mt-20">
@@ -87,7 +124,7 @@ export default function CreateEventPage() {
 
         {/* Right side - Form */}
         <div className="w-full md:w-1/2">
-          <h1 className="text-3xl font-bold mb-8">Prepare New Event</h1>
+          <h1 className="text-3xl font-bold mb-8">Edit Event</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
@@ -100,6 +137,7 @@ export default function CreateEventPage() {
                 placeholder="Enter event title"
                 required
                 maxLength={255}
+                defaultValue={event.title}
               />
             </div>
 
@@ -111,6 +149,7 @@ export default function CreateEventPage() {
                 id="description"
                 name="description"
                 placeholder="Enter event description"
+                defaultValue={event.description}
               />
             </div>
 
@@ -125,6 +164,7 @@ export default function CreateEventPage() {
                   type="datetime-local"
                   min={new Date().toISOString().slice(0, 16)}
                   required
+                  defaultValue={event.start_date?.slice(0, 16)}
                 />
               </div>
 
@@ -137,6 +177,7 @@ export default function CreateEventPage() {
                   name="end_date"
                   type="datetime-local"
                   min={new Date().toISOString().slice(0, 16)}
+                  defaultValue={event.end_date?.slice(0, 16)}
                 />
               </div>
             </div>
@@ -151,6 +192,7 @@ export default function CreateEventPage() {
                 placeholder="Enter Event address"
                 required
                 maxLength={255}
+                defaultValue={event.address}
               />
             </div>
 
@@ -167,6 +209,7 @@ export default function CreateEventPage() {
                   step="0.01"
                   placeholder="Enter event price"
                   required
+                  defaultValue={event.price}
                 />
               </div>
               <div className="space-y-2">
@@ -180,6 +223,7 @@ export default function CreateEventPage() {
                   min="1"
                   placeholder="Enter max. nbr of participants"
                   required
+                  defaultValue={event.max_participants}
                 />
               </div>
             </div>
@@ -193,6 +237,7 @@ export default function CreateEventPage() {
                 name="category"
                 className="w-full rounded-md border border-gray-300 p-2"
                 required
+                defaultValue={event.category}
               >
                 <option value="">Select a category</option>
                 <option value="social">Social</option>
@@ -211,6 +256,7 @@ export default function CreateEventPage() {
                 id="tags"
                 name="tags"
                 placeholder="Enter tags separated by commas (e.g. music, outdoor, family)"
+                defaultValue={event.tags}
               />
             </div>
 
@@ -223,6 +269,7 @@ export default function CreateEventPage() {
                   id="status"
                   name="status"
                   className="w-full rounded-md border border-gray-300 p-2"
+                  defaultValue={event.status}
                 >
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>
@@ -237,6 +284,7 @@ export default function CreateEventPage() {
                   id="visibility"
                   name="visibility"
                   className="w-full rounded-md border border-gray-300 p-2"
+                  defaultValue={event.visibility}
                 >
                   <option value="public">Public</option>
                   <option value="private">Private</option>
@@ -250,7 +298,7 @@ export default function CreateEventPage() {
                   <input
                     type="checkbox"
                     className="sr-only peer"
-                    value=""
+                    checked={isOnline}
                     onChange={(e) => setIsOnline(e.target.checked)}
                   />
 
@@ -274,13 +322,14 @@ export default function CreateEventPage() {
                     name="online_url"
                     required
                     placeholder="Enter online URL"
+                    defaultValue={event.online_url}
                   />
                 </div>
               )}
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Event"}
+              {isLoading ? "Updating..." : "Update Event"}
             </Button>
           </form>
         </div>

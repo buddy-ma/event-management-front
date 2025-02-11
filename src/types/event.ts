@@ -56,6 +56,7 @@ export interface UpdateEventData extends Partial<CreateEventData> {
 }
 
 export interface EventFilters {
+  link?: string;
   category?: EventCategory;
   search?: string;
   page?: number;
