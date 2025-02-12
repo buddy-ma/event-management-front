@@ -17,7 +17,6 @@ export const authOptions = {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-
                 Accept: "application/json",
               },
 
@@ -40,7 +39,6 @@ export const authOptions = {
             throw new Error(result.message || "Authentication failed");
           }
 
-          console.log(result);
           return {
             name: result.data.user.name,
             email: result.data.user.email,

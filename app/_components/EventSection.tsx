@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
-import EventsList from "./PersonalEventsList";
-// import { EventList } from "@/app/_components/EventList";
+import EventsList from "./EventsList";
 export const EventSection = () => {
     return (
         <section className="container relative">
@@ -11,7 +10,8 @@ export const EventSection = () => {
                         <Image src="/bg_event.jpg" alt="Event List" width={500} height={500} className="rounded-lg" />
                     </div>
                     <div>
-                        <EventsList title="Trending Events" link={`${process.env.NEXT_PUBLIC_API_URL}/api/v1/topEvents`} />
+                        <h1 className="text-3xl font-bold mb-8">Trending Events</h1>
+                        <EventsList />
                     </div>
                 </div>
             </div>

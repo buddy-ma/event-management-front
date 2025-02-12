@@ -1,10 +1,9 @@
 import Image from "next/image";
 import { Badge } from "@/app/_components/ui/badge";
-import { Trash, PartyPopper } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEvents } from "@/src/hooks/useEvents";
 import Swal from "sweetalert2";
 import { useSession } from "next-auth/react";
+import { ConfettiButton } from "./ui/confetti";
 
 interface Event {
     id: number;
@@ -24,6 +23,7 @@ interface Event {
     created_at: string;
     updated_at: string;
     is_host: boolean;
+    user_id: number;
 }
 
 interface EventCardProps {
@@ -32,74 +32,41 @@ interface EventCardProps {
     onDelete: (id: number) => void;
 }
 
-
-const handleDelete = (id: number, token: string, onDelete: (id: number) => void) => {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/events/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            }).then(response => {
-                console.log(response);
-                if (response.ok) {
-                    Swal.fire(
-                        'Deleted!',
-                        'Your event has been deleted.',
-                        'success'
-                    );
-                    onDelete(id);
-                } else {
-                    Swal.fire(
-                        'Error!',
-                        'Failed to delete event.',
-                        'error'
-                    );
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-                Swal.fire(
-                    'Error!',
-                    'Failed to delete event.',
-                    'error'
-                );
-            });
-        }
-    });
-}
-export default function EventCard({ event, token, onDelete }: EventCardProps) {
+export default function EventCard({ event }: EventCardProps) {
     const router = useRouter();
-    const { joinEvent, leaveEvent } = useEvents();
     const { data: session } = useSession();
-
     return (
-        <div key={event.id} className="bg-white p-4 rounded-lg shadow-md space-y-2 flex gap-4">
+        <div key={event.id} className="bg-white p-4 rounded-lg shadow-md space-y-2 flex gap-4 items-center">
             <div className="w-24 h-24">
                 <Image src={event.image_url || "/bg_404.jpeg"} alt="Event" width={96} height={96} className="w-full h-full rounded" />
             </div>
             <div className="flex-1 space-y-2">
 
-                <div className="flex justify-between gap-2">
+                <div className="flex justify-between items-center gap-2">
                     <div className="flex gap-2">
                         <Badge className="bg-primary text-white h-5">{event.category}</Badge>
                         <Badge className={`${event.is_online ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"} text-white h-5`}>{event.is_online ? "Online" : "Offline"}</Badge>
                     </div>
                     <div className="flex gap-2">
                         {!event.is_host && (
-                            <button onClick={() => router.push(`/events/${event.id}/edit`)} className="px-4 py-2 text-xs font-medium text-blue-600 bg-blue-100 rounded-full flex gap-2 items-center justify-center">
-                                <PartyPopper /> Join
-                            </button>
+
+                            <div className="relative">
+                                {!session?.user ? (
+                                    <button onClick={() => router.push(`/login`)} className="px-4 py-2 text-xs font-medium text-blue-600 bg-blue-100 rounded-full flex gap-2 items-center justify-center hover:bg-blue-200">
+                                        Join 🎉
+                                    </button>
+                                ) : (
+                                    (event.user_id !== session?.user.id) && (
+                                        <ConfettiButton
+                                            className="px-4 py-2 text-xs font-medium text-blue-600 bg-blue-100 rounded-full flex gap-2 items-center justify-center hover:bg-blue-200"
+                                            eventId={event.id}
+                                        >
+                                            Join 🎉
+                                        </ConfettiButton>
+                                    )
+                                )}
+
+                            </div>
                         )}
                     </div>
                 </div>
