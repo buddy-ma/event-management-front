@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useCallback } from "react";
 import EventCard from "./EventCard";
 import { Skeleton } from "./ui/skeleton";
@@ -35,8 +36,7 @@ export default function EventsList({ apiLink }: { apiLink: string }) {
       setLoading(true);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/${apiLink}${
-          session?.user?.id ? `?user_id=${session.user.id}` : ""
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/${apiLink}${session?.user?.id ? `?user_id=${session.user.id}` : ""
         }`,
         {
           method: "GET",

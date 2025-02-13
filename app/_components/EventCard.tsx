@@ -62,44 +62,53 @@ export default function EventCard({ event, token }: EventCardProps) {
         }
       );
 
-      if (!res.ok) {
-        throw new Error("Failed to join event");
-      } else {
-        toast.success("You are now a participant of this event");
-        setShowConfetti(true);
-        confettiRef.current?.fire({});
-        // Save joined event in localStorage
-        const existingJoined = JSON.parse(
-          localStorage.getItem("joinedEvents") || "[]"
-        );
-        if (!existingJoined.includes(event.id)) {
-          localStorage.setItem(
-            "joinedEvents",
-            JSON.stringify([...existingJoined, event.id])
-          );
-        }
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setJoinedEventIds((prev) => [...prev, event.id]);
-        setShowConfetti(false);
+      if (res.status === 422) {
+        const data = await res.json();
+        toast.error(data.message);
+        return;
       }
+
+      if (!res.ok) {
+        toast.error("Whoops! something went wrong");
+        throw new Error("Failed to join event");
+      }
+
+      toast.success("You are now a participant of this event");
+      setShowConfetti(true);
+      confettiRef.current?.fire({});
+
+      // Save joined event in localStorage
+      const existingJoined = JSON.parse(
+        localStorage.getItem("joinedEvents") || "[]"
+      );
+      if (!existingJoined.includes(event.id)) {
+        localStorage.setItem(
+          "joinedEvents",
+          JSON.stringify([...existingJoined, event.id])
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setJoinedEventIds((prev) => [...prev, event.id]);
+      setShowConfetti(false);
+
     } catch (error) {
       toast.error("Failed to join event");
       setShowConfetti(false);
-      console.error("Confetti button error:", error);
     }
   };
 
   return (
     <div
       key={event.id}
-      className="bg-white p-4 rounded-lg shadow-md space-y-2 flex gap-4 items-center relative"
+      className="bg-white p-4 rounded-lg shadow-md space-y-2 flex gap-4 items-center"
     >
       {showConfetti && (
         <Confetti
           ref={confettiRef}
           className="absolute left-0 top-0 z-0 size-full"
         />
-      )}
+      )
+      }
       <div className="w-24 h-24">
         <Image
           src={event.image_url || "/bg_404.jpeg"}
@@ -116,11 +125,10 @@ export default function EventCard({ event, token }: EventCardProps) {
               {event.category}
             </Badge>
             <Badge
-              className={`${
-                event.is_online
-                  ? "bg-green-500 hover:bg-green-600"
-                  : "bg-red-500 hover:bg-red-600"
-              } text-white h-5`}
+              className={`${event.is_online
+                ? "bg-green-500 hover:bg-green-600"
+                : "bg-red-500 hover:bg-red-600"
+                } text-white h-5`}
             >
               {event.is_online ? "Online" : "Offline"}
             </Badge>
@@ -128,12 +136,12 @@ export default function EventCard({ event, token }: EventCardProps) {
           <div className="flex gap-2">
             {event.has_spots ? (
               <div className="relative">
-                {!session?.user ? (
+                {!session?.user?.id ? (
                   <button
                     onClick={() => router.push(`/login`)}
                     className="px-4 py-2 text-xs font-medium text-blue-600 bg-blue-100 rounded-full flex gap-2 items-center justify-center hover:bg-blue-200"
                   >
-                    Join 🎉
+                    Login
                   </button>
                 ) : (
                   <div>

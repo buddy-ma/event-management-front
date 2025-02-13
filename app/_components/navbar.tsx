@@ -19,7 +19,6 @@ import {
 
 import Link from "next/link";
 import Image from "next/image";
-import { ToggleTheme } from "@/app/_components/toogle-theme";
 import { useEffect, useState } from "react";
 import { signOut, useSession, SessionProvider } from "next-auth/react";
 import { Button } from "@/app/_components/ui/button";
@@ -66,13 +65,13 @@ const NavbarContent = () => {
 
   const routes = [
     { href: "/", label: "Home" },
-    { href: "/events", label: "My Events" },
+    { href: "/events/all", label: "Events" },
     { href: "/contact", label: "Contact" },
   ];
 
   return (
     <header
-      className={`hover:shadow-lg transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-50 bg-opacity-30 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky z-40 rounded-2xl flex justify-between items-center p-2 hover:border-2 hover:border-secondary ${scrolled ? "border-2 border-secondary" : "border-2 border-transparent"
+      className={`hover:shadow-lg transition-shadow duration-300 backdrop-filter backdrop-blur-lg bg-opacity-30 w-[90%] md:w-[70%] lg:w-[75%] lg:max-w-screen-xl top-5 mx-auto sticky z-40 rounded-2xl flex justify-between items-center p-2 hover:border-2 hover:border-secondary ${scrolled ? "border-2 border-secondary" : "border-2 border-transparent"
         }`}
     >
       <Link href="/" className="font-bold text-lg flex items-center">
@@ -133,7 +132,6 @@ const NavbarContent = () => {
             <SheetFooter className="flex-col sm:flex-col justify-start items-start">
               <Separator className="mb-2" />
 
-              <ToggleTheme />
             </SheetFooter>
           </SheetContent>
         </Sheet>
@@ -155,7 +153,6 @@ const NavbarContent = () => {
       </NavigationMenu>
 
       <div className="hidden lg:flex items-center gap-0">
-        <ToggleTheme />
         {session ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -169,9 +166,9 @@ const NavbarContent = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
                 <DropdownMenuItem className="text-primary flex items-center">
-                  <Link href="/profile" className="flex items-center">
+                  <Link href="/events" className="flex items-center">
                     <User className="mr-2 size-4" />
-                    <span>Profile</span>
+                    <span>My Events</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

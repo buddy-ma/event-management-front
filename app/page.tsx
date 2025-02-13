@@ -7,7 +7,7 @@ const Welcome = () => {
       <div className="container mx-auto">
         {/* Hero Section */}
         <HeroSection />
-        {/* list all the events with possibility to filter and join */}
+        {/* Add Suspense boundary around EventSection */}
         <EventSection />
       </div>
     </div>
