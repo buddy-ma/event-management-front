@@ -16,7 +16,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import { useSession } from "next-auth/react";
+
 import { Button, ButtonProps } from "@/app/_components/ui/button";
 
 type Api = {
@@ -60,7 +60,7 @@ const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
         }
       }
     },
-    [globalOptions],
+    [globalOptions]
   );
 
   const fire = useCallback(
@@ -71,14 +71,14 @@ const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
         console.error("Confetti error:", error);
       }
     },
-    [options],
+    [options]
   );
 
   const api = useMemo(
     () => ({
       fire,
     }),
-    [fire],
+    [fire]
   );
 
   useImperativeHandle(ref, () => api, [api]);
@@ -111,37 +111,17 @@ export const Confetti = ConfettiComponent;
 
 interface ConfettiButtonProps extends ButtonProps {
   options?: ConfettiOptions &
-  ConfettiGlobalOptions & { canvas?: HTMLCanvasElement };
+    ConfettiGlobalOptions & { canvas?: HTMLCanvasElement };
   children?: React.ReactNode;
-  eventId: number;
 }
 
 const ConfettiButtonComponent = ({
   options,
   children,
-  eventId,
   ...props
 }: ConfettiButtonProps) => {
-  const { data: session } = useSession();
   const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/events/${eventId}/join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${session?.user?.token}`
-        }
-      });
-
-      console.log("res " + res);
-      if (!res.ok) {
-        throw new Error('Failed to join event');
-      }
-
-    } catch (error) {
-      console.error("Confetti button error:", error);
-    } finally {
       const rect = event.currentTarget.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
       const y = rect.top + rect.height / 2;
@@ -152,6 +132,8 @@ const ConfettiButtonComponent = ({
           y: y / window.innerHeight,
         },
       });
+    } catch (error) {
+      console.error("Confetti button error:", error);
     }
   };
 

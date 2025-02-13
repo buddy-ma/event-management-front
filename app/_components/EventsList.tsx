@@ -3,7 +3,6 @@ import EventCard from "./EventCard";
 import { Skeleton } from "./ui/skeleton";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-
 interface Event {
   id: number;
   title: string;
@@ -22,39 +21,45 @@ interface Event {
   created_at: string;
   updated_at: string;
   is_host: boolean;
+  user_id: number;
+  has_spots: boolean;
+  has_joined: boolean;
 }
 
-export default function EventsList() {
-
+export default function EventsList({ apiLink }: { apiLink: string }) {
   const { data: session } = useSession();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-
-
   const handleSearch = useCallback(async () => {
     try {
       setLoading(true);
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/topEvents`;
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/topEvents`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/${apiLink}${
+          session?.user?.id ? `?user_id=${session.user.id}` : ""
+        }`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Response not OK:', response.status, errorText);
-        throw new Error(`Failed to fetch events: ${response.status} ${errorText}`);
+        console.error("Response not OK:", response.status, errorText);
+        throw new Error(
+          `Failed to fetch events: ${response.status} ${errorText}`
+        );
       }
 
       const data = await response.json();
 
       if (!data.data || !Array.isArray(data.data)) {
-        console.error('Invalid data format received:', data);
-        throw new Error('Invalid data format received from API');
+        console.error("Invalid data format received:", data);
+        throw new Error("Invalid data format received from API");
       }
 
       setEvents(data.data);

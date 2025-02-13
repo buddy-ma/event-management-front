@@ -57,7 +57,14 @@ export const HeroSection = () => {
                 Organize an event
                 <ArrowRight className="size-5 ml-2 group-hover/arrow:translate-x-1 transition-transform" />
               </Button>
-              <Button className="w-auto bg-secondary text-primary font-bold hover:bg-primary hover:text-secondary">
+              <Button
+                onClick={() => {
+                  document.getElementById("events-section")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }}
+                className="w-auto bg-secondary text-primary font-bold hover:bg-primary hover:text-secondary"
+              >
                 Join an event
               </Button>
             </div>
