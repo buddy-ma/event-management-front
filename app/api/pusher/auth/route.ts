@@ -1,8 +1,19 @@
-import { pusher } from '@/src/utils/pusher';
+import pusher from '@/src/utils/pusher';
 import { NextResponse } from 'next/server';
-
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { AuthOptions } from 'next-auth';
 export async function POST(request: Request) {
     try {
+        const session = await getServerSession(authOptions as AuthOptions);
+
+        console.log("session");
+        console.log(session);
+        // Check for user ID in the correct location of the session object
+        if (!session?.user?.id) {
+            return new NextResponse('Unauthorized - Session not available', { status: 401 });
+        }
+
         let socketId: string;
         let channel: string;
 
@@ -19,15 +30,19 @@ export async function POST(request: Request) {
             channel = formData.get('channel_name') as string;
         }
 
-        // Ensure the channel name matches the user's private channel
-        if (!channel.startsWith(`private-user.1`)) {
+        // Update the channel check to use session.user.id
+        if (!channel.startsWith(`private-user.${session.user.id}`)) {
             return new NextResponse('Forbidden', { status: 403 });
         }
 
-        const authResponse = (pusher as any).authorizeChannel(socketId, channel, {
-            user_id: '1',
-            user_info: {}
+        const authResponse = pusher.authorizeChannel(socketId, channel, {
+            user_id: session.user.id,
+            user_info: {
+                name: session.user.name,
+                email: session.user.email
+            }
         });
+
         return NextResponse.json(authResponse);
     } catch (error) {
         console.error('Error in POST:', error);

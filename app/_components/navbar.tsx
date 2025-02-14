@@ -31,6 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
+import Notifications from "./Notifications";
 
 interface RouteProps {
   href: string;
@@ -151,15 +152,15 @@ const NavbarContent = () => {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-
-      <div className="hidden lg:flex items-center gap-0">
+      <div className="hidden lg:flex justify-end items-center gap-0">
         {session ? (
           <div className="flex items-center gap-2">
+            <Notifications />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="bg-primary text-white ml-4"
+                  className="bg-primary text-white ml-1"
                 >
                   Welcome, {session.user?.name}
                 </Button>

@@ -19,7 +19,7 @@ export default function Login() {
 
   // Handle redirect in useEffect instead of during render
   useEffect(() => {
-    if (session) {
+    if (session?.user) {
       router.push("/");
     }
   }, [session, router]);
